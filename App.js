@@ -1,5 +1,5 @@
 import { StatusBar } from "expo-status-bar";
-import { StyleSheet, Text, View, Image } from "react-native";
+import { StyleSheet, Text, View, Image, TouchableOpacity } from "react-native";
 import logo from "./assets/logo.png";
 
 export default function App() {
@@ -23,6 +23,17 @@ export default function App() {
         below!
       </Text>
 
+      {/*
+        Creating a button with interactiveity
+        onPress is like an onClick for React
+      */}
+      <TouchableOpacity
+        onPress={() => alert("Hello, world!")}
+        style={styles.button}
+      >
+        <Text style={styles.buttonText}>Pick a photo</Text>
+      </TouchableOpacity>
+
       <StatusBar style="auto" />
     </View>
   );
@@ -39,5 +50,18 @@ const styles = StyleSheet.create({
   image: { width: 305, height: 159, marginBottom: 15 },
 
   // marginHorizontal to have some space around the edges of the screen
-  instructions: { color: "#888", fontSize: 28, marginHorizontal: 15 },
+  instructions: {
+    color: "#888",
+    fontSize: 25,
+    marginHorizontal: 30,
+    marginBottom: 15,
+  },
+
+  /*
+    adding padding gives the button a bigger area for people to click
+    borderRadius helps round out the corners on your buttons
+  */
+  button: { backgroundColor: "pink", padding: 20, borderRadius: 5 },
+
+  buttonText: { fontSize: 30, color: "#fff" },
 });
