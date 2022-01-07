@@ -45,6 +45,10 @@ export default function App() {
     }
   };
 
+  const unselectImage = () => {
+    setSelectedImage(null);
+  };
+
   //func shares the selected image if the device is capable of sharing
   const openShareDialogAsync = async () => {
     if (!(await Sharing.isAvailableAsync())) {
@@ -69,6 +73,10 @@ export default function App() {
         {/* when button is clicked, the function will share the selected image */}
         <TouchableOpacity onPress={openShareDialogAsync} style={styles.button}>
           <Text style={styles.buttonText}>Share this photo</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity onPress={unselectImage} style={styles.button}>
+          <Text style={styles.buttonText}>Select a different picture</Text>
         </TouchableOpacity>
       </View>
     );
@@ -130,7 +138,12 @@ const styles = StyleSheet.create({
     adding padding gives the button a bigger area for people to click
     borderRadius helps round out the corners on your buttons
   */
-  button: { backgroundColor: "pink", padding: 20, borderRadius: 5 },
+  button: {
+    backgroundColor: "pink",
+    padding: 20,
+    borderRadius: 5,
+    marginBottom: 15,
+  },
 
   buttonText: { fontSize: 30, color: "#fff" },
 
