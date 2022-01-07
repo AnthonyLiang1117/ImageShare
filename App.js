@@ -1,8 +1,46 @@
-import { StatusBar } from "expo-status-bar";
+import React from "react";
 import { StyleSheet, Text, View, Image, TouchableOpacity } from "react-native";
+import { StatusBar } from "expo-status-bar";
+import * as ImagePicker from "expo-image-picker";
 import logo from "./assets/logo.png";
 
 export default function App() {
+  // initializes a variable to hold our selected pic and the function that sets it for us
+  const [selectedImage, setSelectedImage] = React.useState(null);
+
+  // func asks for permission to access camera roll
+  let openImagePickerAsync = async () => {
+    let permissionResult =
+      await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+    if (permissionResult.granted === false) {
+      alert("Permission to access camera roll is required!");
+      return;
+    }
+
+    // results obj that comes from selecting the picture in Camera Roll
+    let pickerResult = await ImagePicker.launchImageLibraryAsync();
+
+    if (pickerResult.cancelled === true) {
+      return;
+    }
+
+    // sets selectedImage from React.useState with the selected picture
+    setSelectedImage({ localUri: pickerResult.uri });
+  };
+
+  // shows the selected image on screen if there is one
+  if (selectedImage) {
+    return (
+      <View style={styles.container}>
+        <Image
+          source={{ uri: selectedImage.localUri }}
+          style={styles.thumbnail}
+        />
+      </View>
+    );
+  }
+
   return (
     <View style={styles.container}>
       {/*
@@ -27,10 +65,7 @@ export default function App() {
         Creating a button with interactiveity
         onPress is like an onClick for React
       */}
-      <TouchableOpacity
-        onPress={() => alert("Hello, world!")}
-        style={styles.button}
-      >
+      <TouchableOpacity onPress={openImagePickerAsync} style={styles.button}>
         <Text style={styles.buttonText}>Pick a photo</Text>
       </TouchableOpacity>
 
@@ -64,4 +99,15 @@ const styles = StyleSheet.create({
   button: { backgroundColor: "pink", padding: 20, borderRadius: 5 },
 
   buttonText: { fontSize: 30, color: "#fff" },
+
+  /*
+    giving selected pic a fixed width and height
+    resizeModel, image style property that lets us control how the image is resized to fit given dimensions
+  */
+
+  thumbnail: {
+    width: 300,
+    height: 300,
+    resizeMode: "contain",
+  },
 });
