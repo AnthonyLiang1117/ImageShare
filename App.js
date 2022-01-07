@@ -1,8 +1,16 @@
 import React from "react";
-import { StyleSheet, Text, View, Image, TouchableOpacity } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  Image,
+  TouchableOpacity,
+  Platform,
+} from "react-native";
 import { StatusBar } from "expo-status-bar";
 import * as ImagePicker from "expo-image-picker";
 import * as Sharing from "expo-sharing";
+import uploadToAnonymousFilesAsync from "anonymous-files";
 import logo from "./assets/logo.png";
 
 export default function App() {
@@ -26,14 +34,23 @@ export default function App() {
       return;
     }
 
-    // sets selectedImage from React.useState with the selected picture
-    setSelectedImage({ localUri: pickerResult.uri });
+    // checks if the operating system using the App is from a browser or anything else since browsers cannot access localUris
+    if (Platform.OS === "web") {
+      // if browser, will upload the file to the anonymous files expo api and place it in the selectedImage obj as another key value pair (remotUri) to be accessed through the web
+      let remoteUri = await uploadToAnonymousFilesAsync(pickerResult.uri);
+      setSelectedImage({ localUri: pickerResult.uri, remoteUri });
+    } else {
+      // sets selectedImage from React.useState with the selected picture
+      setSelectedImage({ localUri: pickerResult.uri, remoteUri: null });
+    }
   };
 
   //func shares the selected image if the device is capable of sharing
   const openShareDialogAsync = async () => {
     if (!(await Sharing.isAvailableAsync())) {
-      alert(`Uh oh, sharing isn't available on your platform`);
+      alert(
+        `Uh oh, sharing isn't available for sharing at: ${selectedImage.remoteUri}`
+      );
       return;
     }
 
