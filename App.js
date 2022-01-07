@@ -2,6 +2,7 @@ import React from "react";
 import { StyleSheet, Text, View, Image, TouchableOpacity } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import * as ImagePicker from "expo-image-picker";
+import * as Sharing from "expo-sharing";
 import logo from "./assets/logo.png";
 
 export default function App() {
@@ -9,7 +10,7 @@ export default function App() {
   const [selectedImage, setSelectedImage] = React.useState(null);
 
   // func asks for permission to access camera roll
-  let openImagePickerAsync = async () => {
+  const openImagePickerAsync = async () => {
     let permissionResult =
       await ImagePicker.requestMediaLibraryPermissionsAsync();
 
@@ -29,6 +30,16 @@ export default function App() {
     setSelectedImage({ localUri: pickerResult.uri });
   };
 
+  //func shares the selected image if the device is capable of sharing
+  const openShareDialogAsync = async () => {
+    if (!(await Sharing.isAvailableAsync())) {
+      alert(`Uh oh, sharing isn't available on your platform`);
+      return;
+    }
+
+    await Sharing.shareAsync(selectedImage.localUri);
+  };
+
   // shows the selected image on screen if there is one
   if (selectedImage) {
     return (
@@ -37,6 +48,11 @@ export default function App() {
           source={{ uri: selectedImage.localUri }}
           style={styles.thumbnail}
         />
+
+        {/* when button is clicked, the function will share the selected image */}
+        <TouchableOpacity onPress={openShareDialogAsync} style={styles.button}>
+          <Text style={styles.buttonText}>Share this photo</Text>
+        </TouchableOpacity>
       </View>
     );
   }
@@ -64,6 +80,7 @@ export default function App() {
       {/*
         Creating a button with interactiveity
         onPress is like an onClick for React
+        when clicked, the function will access camera roll and select an image to save on to state
       */}
       <TouchableOpacity onPress={openImagePickerAsync} style={styles.button}>
         <Text style={styles.buttonText}>Pick a photo</Text>
@@ -104,10 +121,10 @@ const styles = StyleSheet.create({
     giving selected pic a fixed width and height
     resizeModel, image style property that lets us control how the image is resized to fit given dimensions
   */
-
   thumbnail: {
     width: 300,
     height: 300,
     resizeMode: "contain",
+    marginBottom: 15,
   },
 });
